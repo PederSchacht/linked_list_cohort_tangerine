@@ -28,7 +28,7 @@ class LinkedListTest < MiniTest::Unit::TestCase
 
   def test_03_cant_set_self_as_next_list_item
     lli1 = LinkedListItem.new("foo")
-    assert_raise ArgumentError do
+    assert_raises ArgumentError do
       lli1.next_list_item = lli1
     end
   end
