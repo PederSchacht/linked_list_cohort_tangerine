@@ -5,15 +5,11 @@ class LinkedListItem
 
   def initialize(payload)
     @payload = payload
-    @next_list_item = nil
   end
 
-  def next_list_item=(str)
-    if str == self
-      raise ArgumentError
-    else
-      @next_list_item = str
-    end
+  def next_list_item=(item)
+      raise ArgumentError if self === item
+      @next_list_item = item
   end
 
   def last?
@@ -21,13 +17,19 @@ class LinkedListItem
   end
 
   def <=>(another_item)
-    head = self.payload.to_s
-    tail = another_item.payload.to_s
-    head <=> tail
+    payload1 = self.payload
+    payload2 = another_item.payload
+
+    precedence = [Fixnum, String, Symbol]
+    index1 = precedence.index(payload1.class)
+    index2 = precedence.index(payload2.class)
+    class_equality = (index1 <=> index2)
+
+    class_equality == 0 ? payload1 <=> payload2 : class_equality
   end
 
-  def ===(b)
-    self.equal?(b)
+  def ===(other)
+    self.equal? other
   end
 
 end

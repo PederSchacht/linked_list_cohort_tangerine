@@ -24,7 +24,16 @@ class LinkedListTest < MiniTest::Unit::TestCase
     assert_equal("bar", ll.get(1))
   end
 
-  def test_07_add_multiple_items_get_item
+  def test_07a_add_multiple_items_get_item
+    ll = LinkedList.new
+    ll.add_item("foo")
+    ll.add_item("bar")
+    ll.add_item("grille")
+    ll.add_item("zoo")
+    assert_equal("bar", ll.get(1))
+  end
+
+  def test_07b_add_multiple_items_get_item
     ll = LinkedList.new
     ll.add_item("foo")
     ll.add_item("bar")
@@ -34,13 +43,22 @@ class LinkedListTest < MiniTest::Unit::TestCase
   end
 
   def test_08a_get_negative_index_raises_index_error
-    ll = LinkedList.new("a")
+    ll = LinkedList.new()
+    ll.add_item("a")
     assert_raises IndexError do
       ll.get(-1)
     end
   end
 
   def test_08_get_item_that_doesnt_exist
+    ll = LinkedList.new
+    ll.add_item("foo")
+    assert_raises IndexError do
+      ll.get(1)
+    end
+  end
+
+  def test_08a_get_item_that_doesnt_exist
     ll = LinkedList.new
     assert_raises IndexError do
       ll.get(1)
@@ -98,12 +116,21 @@ class LinkedListTest < MiniTest::Unit::TestCase
     assert_equal('| foo |', ll.to_s)
   end
 
-  def test_15_to_s_a_long_list
+  def test_15a_to_s_a_long_list
     ll = LinkedList.new
     ll.add_item("foo")
     ll.add_item("bar")
     ll.add_item("grille")
     assert_equal '| foo, bar, grille |', ll.to_s
+  end
+
+  def test_15b_to_s_a_long_list
+    skip
+    ll = LinkedList.new
+    ll.add_item(:foo)
+    ll.add_item("bar")
+    ll.add_item(123)
+    assert_equal '| :foo, bar, 123 |', ll.to_s
   end
 
   # # ========= Bonus ========== #

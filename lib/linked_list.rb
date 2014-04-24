@@ -1,82 +1,132 @@
 require 'linked_list_item'
 
 class LinkedList
-  attr_accessor :head_item, :tail_item
+  attr_reader :size
 
-  def initialize(*args)
-    self.tail_item = nil
-    args.each {|arg| self.add_item(arg)}
+  def initialize(*payloads)
+    @size = 0
+    payloads.each {|payload| add_item(payload)}
   end
 
-  def add_item(item)
-    new_item = LinkedListItem.new(item)
-    if self.head_item == nil
-      self.head_item = new_item
+  def add_item(payload)
+    new_item = LinkedListItem.new(payload)
+    if @first_item.nil?
+      @first_item = new_item
     else
-      current = self.head_item
-      while current.next_list_item != nil
-        current = current.next_list_item
+      item = @first_item
+      until item.last?
+        item = item.next_list_item
       end
-      current.next_list_item = new_item
+      item.next_list_item = new_item
     end
-    self.tail_item = new_item
+    @size += 1
   end
 
-  def get(point, *mod)
-    current = self.head_item
-    if point < 0
-      raise IndexError
-    end
-    (0..point).each do |place|
-      if current == nil
-        raise IndexError
-      elsif place == point
-        current.payload = mod[0] if mod.length != 0
-        return current if caller.include?("remove")
-        return current.payload
-      else
-        current = current.next_list_item
-      end
-    end
+  def get(i)
+    get_item(i).payload
+  end
+  alias [] get
+
+  def []=(index, value)
+    get_item(index).payload = value
   end
 
-  def remove(point)
-    point > 0 ? prior = self.get(point - 1) : prior = self.head_item
-    # prior.next_list_item = self.get(point + 1) if self.size > point + 1
-    self.size > point + 1 ? prior.next_list_item = self.get(point + 1) : prior.next_list_item = nil
-  end
-
-  def size
-    size = 0
-    current = self.head_item
-    while current != nil
-      size += 1
-      current = current.next_list_item
+  def remove(index)
+    @size -= 1
+    if index == 0
+      @first_item = @first_item.next_list_item
+    else
+      previous_item = get_item(index - 1)
+      next_list_item = previous_item.next_list_item.next_list_item
+      previous_item.next_list_item = next_list_item
     end
-    size
   end
 
   def last
-    self.tail_item != nil ? self.tail_item.payload : nil
+    size == 0 ? nil : get(size - 1)
   end
 
   def to_s
-    reply = "| "
-    current = self.head_item
-    while current != nil
-      reply = reply + current.payload.to_str
-      current = current.next_list_item
-      current != nil ? reply = reply + ", " : reply = reply + " "
+    reply = "|"
+    item = @first_item
+    until item.nil?
+      reply << " " +  item.payload.to_s
+      reply << "," unless item.last?
+      item = item.next_list_item
     end
-    reply = reply + "|"
+    reply + " |"
   end
 
-  def [] num
-    self.get(num)
+  def indexOf(payload)
+    item = @first_item
+    position = 0
+    until item.nil?
+      return position if item.payload == payload
+      position += 1
+      item = item.next_list_item
+    end
+    nil
   end
 
-  def []= num, item_mod
-    self.get(num, item_mod)
+  def sorted?
+    item = @first_item
+    until item.nil? || item.last?
+      return false if item > item.next_list_item
+      item = item.next_list_item
+    end
+    true
   end
 
+  def sort
+    if @size <= 1
+      self
+    else
+      while true
+        item = @first_item
+        index = 0
+        swap = false
+        (@size - 1).times do
+          if item > item.next_list_item
+            swap_with_next(index)
+            swap = true
+          else
+            item = item.next_list_item
+          end
+          index += 1
+        end
+        break unless swap
+      end
+      self
+    end
+  end
+
+  def swap_with_next(index)
+    raise IndexError if index < 0 || index >= (@size - 1)
+
+    if index == 0
+      item1 = @first_item
+      item2 = item1.next_list_item
+      item1.next_list_item = item2.next_list_item
+      item2.next_list_item = item1
+      @first_item = item2
+    else
+      current = @first_item
+      (index - 1).times {current = current.next_list_item}
+      previous = current
+      item1 = previous.next_list_item
+      item2 = item1.next_list_item
+      previous.next_list_item = item2
+      item1.next_list_item = item2.next_list_item
+      item2.next_list_item = item1
+    end
+  end
+
+  private
+
+  def get_item(index)
+    raise IndexError if index < 0 || index >= size
+    item = @first_item
+    index.times {item = item.next_list_item}
+    item
+  end
 end

@@ -22,7 +22,9 @@ class LinkedListTest < MiniTest::Unit::TestCase
   def test_02_add_next_list_item
     lli1 = LinkedListItem.new("foo")
     lli2 = LinkedListItem.new("bar")
+
     lli1.next_list_item = lli2
+
     assert_equal(lli2, lli1.next_list_item)
   end
 
@@ -63,7 +65,7 @@ class LinkedListTest < MiniTest::Unit::TestCase
   end
 
   def test_05d_comparator_symbol
-    lli1 = LinkedListItem.new(:foo)
+    lli1 = LinkedListItem.new(:apple)
     lli2 = LinkedListItem.new("bar")
     assert lli1 > lli2
     assert lli2 < lli1
